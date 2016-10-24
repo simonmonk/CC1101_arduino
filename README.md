@@ -20,6 +20,9 @@ These instructions are for an Arduino Uno.
 |2|GD0|Signals buffer ready to read|
 
 
+![alt text](F19_10.png_ "Connections")
+
+
 # Installing the Library
 
 To install the library into your IDE:
