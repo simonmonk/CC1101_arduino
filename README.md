@@ -9,9 +9,9 @@ I made the following changes to the original library.
 # Connecting an Arduino to a CC1101
 These instructions are for an Arduino Uno.
 
-|Arduino|CC1101|
-----------------
-|GND|GND|Notes|
+|Arduino|CC1101|Notes|
+|-------|------|-----|
+|GND    |GND| |
 |3.3V|VCC||
 |10|CSN/SS|Must be level shifted to 3.3V|
 |11|SI/MOSI|Must be level shifted to 3.3V|
