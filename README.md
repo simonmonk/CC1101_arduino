@@ -20,7 +20,7 @@ These instructions are for an Arduino Uno.
 |2|GD0|Signals buffer ready to read|
 
 
-![alt text](F19_10.png_ "Connections")
+![alt text](https://github.com/simonmonk/CC1101_arduino/blob/master/F19_10.png?raw=true_ "Connections")
 
 
 # Installing the Library
