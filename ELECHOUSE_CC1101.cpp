@@ -52,10 +52,10 @@ byte PaTabel[8] = {0x60 ,0x60 ,0x60 ,0x60 ,0x60 ,0x60 ,0x60 ,0x60};
 void ELECHOUSE_CC1101::SpiInit(void)
 {
   // initialize the SPI pins
-  pinMode(SCK_PIN, OUTPUT);
-  pinMode(MOSI_PIN, OUTPUT);
-  pinMode(MISO_PIN, INPUT);
-  pinMode(SS_PIN, OUTPUT);
+  pinMode(PIN_SPI_SCK, OUTPUT);
+  pinMode(PIN_SPI_MOSI, OUTPUT);
+  pinMode(PIN_SPI_MISO, INPUT);
+  pinMode(PIN_SPI_SS, OUTPUT);
 
   // enable SPI Master, MSB, SPI mode 0, FOSC/4
   SpiMode(0);
@@ -114,15 +114,15 @@ void ELECHOUSE_CC1101::GDO_Set (void)
 ****************************************************************/
 void ELECHOUSE_CC1101::Reset (void)
 {
-	digitalWrite(SS_PIN, LOW);
+	digitalWrite(PIN_SPI_SS, LOW);
 	delay(1);
-	digitalWrite(SS_PIN, HIGH);
+	digitalWrite(PIN_SPI_SS, HIGH);
 	delay(1);
-	digitalWrite(SS_PIN, LOW);
+	digitalWrite(PIN_SPI_SS, LOW);
 	while(digitalRead(MISO_PIN));
 	SpiTransfer(CC1101_SRES);
 	while(digitalRead(MISO_PIN));
-	digitalWrite(SS_PIN, HIGH);
+	digitalWrite(PIN_SPI_SS, HIGH);
 }
 
 /****************************************************************
@@ -135,9 +135,9 @@ void ELECHOUSE_CC1101::Init(void)
 {
 	SpiInit();										//spi initialization
 	GDO_Set();										//GDO set
-	digitalWrite(SS_PIN, HIGH);
-	digitalWrite(SCK_PIN, HIGH);
-	digitalWrite(MOSI_PIN, LOW);
+	digitalWrite(PIN_SPI_SS, HIGH);
+	digitalWrite(PIN_SPI_SCK, HIGH);
+	digitalWrite(PIN_SPI_MOSI, LOW);
 	Reset();										//CC1101 reset
 	RegConfigSettings(F_433);						//CC1101 register config
 	SpiWriteBurstReg(CC1101_PATABLE,PaTabel,8);		//CC1101 PATABLE config
@@ -153,9 +153,9 @@ void ELECHOUSE_CC1101::Init(byte f)
 {
 	SpiInit();										//spi initialization
 	GDO_Set();										//GDO set
-	digitalWrite(SS_PIN, HIGH);
-	digitalWrite(SCK_PIN, HIGH);
-	digitalWrite(MOSI_PIN, LOW);
+	digitalWrite(PIN_SPI_SS, HIGH);
+  digitalWrite(PIN_SPI_SCK, HIGH);
+  digitalWrite(PIN_SPI_MOSI, LOW);
 	Reset();										//CC1101 reset
 	RegConfigSettings(f);							//CC1101 register config
 	SpiWriteBurstReg(CC1101_PATABLE,PaTabel,8);		//CC1101 PATABLE config
@@ -170,11 +170,11 @@ void ELECHOUSE_CC1101::Init(byte f)
 ****************************************************************/
 void ELECHOUSE_CC1101::SpiWriteReg(byte addr, byte value)
 {
-	digitalWrite(SS_PIN, LOW);
-	while(digitalRead(MISO_PIN));
+	digitalWrite(PIN_SPI_SS, LOW);
+	while(digitalRead(PIN_SPI_MISO));
 	SpiTransfer(addr);
 	SpiTransfer(value);
-	digitalWrite(SS_PIN, HIGH);
+	digitalWrite(PIN_SPI_SS, HIGH);
 }
 
 /****************************************************************
@@ -188,14 +188,14 @@ void ELECHOUSE_CC1101::SpiWriteBurstReg(byte addr, byte *buffer, byte num)
 	byte i, temp;
 
 	temp = addr | WRITE_BURST;
-    digitalWrite(SS_PIN, LOW);
-    while(digitalRead(MISO_PIN));
+    digitalWrite(PIN_SPI_SS, LOW);
+    while(digitalRead(PIN_SPI_MISO));
     SpiTransfer(temp);
     for (i = 0; i < num; i++)
  	{
         SpiTransfer(buffer[i]);
     }
-    digitalWrite(SS_PIN, HIGH);
+    digitalWrite(PIN_SPI_SS, HIGH);
 }
 
 /****************************************************************
@@ -206,10 +206,10 @@ void ELECHOUSE_CC1101::SpiWriteBurstReg(byte addr, byte *buffer, byte num)
 ****************************************************************/
 void ELECHOUSE_CC1101::SpiStrobe(byte strobe)
 {
-	digitalWrite(SS_PIN, LOW);
-	while(digitalRead(MISO_PIN));
+	digitalWrite(PIN_SPI_SS, LOW);
+	while(digitalRead(PIN_SPI_MISO));
 	SpiTransfer(strobe);
-	digitalWrite(SS_PIN, HIGH);
+	digitalWrite(PIN_SPI_SS, HIGH);
 }
 
 /****************************************************************
@@ -223,11 +223,11 @@ byte ELECHOUSE_CC1101::SpiReadReg(byte addr)
 	byte temp, value;
 
     temp = addr|READ_SINGLE;
-	digitalWrite(SS_PIN, LOW);
-	while(digitalRead(MISO_PIN));
+	digitalWrite(PIN_SPI_SS, LOW);
+	while(digitalRead(PIN_SPI_MISO));
 	SpiTransfer(temp);
 	value=SpiTransfer(0);
-	digitalWrite(SS_PIN, HIGH);
+	digitalWrite(PIN_SPI_SS, HIGH);
 
 	return value;
 }
@@ -243,14 +243,14 @@ void ELECHOUSE_CC1101::SpiReadBurstReg(byte addr, byte *buffer, byte num)
 	byte i,temp;
 
 	temp = addr | READ_BURST;
-	digitalWrite(SS_PIN, LOW);
-	while(digitalRead(MISO_PIN));
+	digitalWrite(PIN_SPI_SS, LOW);
+	while(digitalRead(PIN_SPI_MISO));
 	SpiTransfer(temp);
 	for(i=0;i<num;i++)
 	{
 		buffer[i]=SpiTransfer(0);
 	}
-	digitalWrite(SS_PIN, HIGH);
+	digitalWrite(PIN_SPI_SS, HIGH);
 }
 
 /****************************************************************
@@ -264,11 +264,11 @@ byte ELECHOUSE_CC1101::SpiReadStatus(byte addr)
 	byte value,temp;
 
 	temp = addr | READ_BURST;
-	digitalWrite(SS_PIN, LOW);
-	while(digitalRead(MISO_PIN));
+	digitalWrite(PIN_SPI_SS, LOW);
+	while(digitalRead(PIN_SPI_MISO));
 	SpiTransfer(temp);
 	value=SpiTransfer(0);
-	digitalWrite(SS_PIN, HIGH);
+	digitalWrite(PIN_SPI_SS, HIGH);
 
 	return value;
 }
@@ -332,7 +332,7 @@ void ELECHOUSE_CC1101::RegConfigSettings(byte f)
     SpiWriteReg(CC1101_IOCFG0,   0x06);  	//asserts when sync word has been sent/received, and de-asserts at the end of the packet 
     SpiWriteReg(CC1101_PKTCTRL1, 0x04);		//two status bytes will be appended to the payload of the packet,including RSSI LQI and CRC OK
 											//No address check
-    SpiWriteReg(CC1101_PKTCTRL0, 0x05);		//whitening off;CRC Enable£»variable length packets, packet length configured by the first byte after sync word
+    SpiWriteReg(CC1101_PKTCTRL0, 0x05);		//whitening off;CRC Enableï¿½ï¿½variable length packets, packet length configured by the first byte after sync word
     SpiWriteReg(CC1101_ADDR,     0x00);		//address used for packet filtration.
     SpiWriteReg(CC1101_PKTLEN,   0x3D); 	//61 bytes max length
 }
@@ -412,7 +412,3 @@ byte ELECHOUSE_CC1101::ReceiveData(byte *rxBuffer)
 }
 
 ELECHOUSE_CC1101 ELECHOUSE_cc1101;
-
-
-
-
